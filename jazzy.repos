@@ -1,0 +1,13 @@
+repositories:
+  osqp_vendor:
+    type: git
+    url: https://github.com/tier4/osqp_vendor.git
+    version: 3759ffce266ab7043fc809ff2a548e45d413d144
+  osqp_eigen:
+    type: git
+    url: https://github.com/robotology/osqp-eigen.git
+    version: 7587e6994dc194cf22511d909bf4cc5d5e0e4eb2
+  small_gicp:
+    type: git
+    url: https://github.com/koide3/small_gicp.git
+    version: 8a2d3734f699c042db74ae61d295b0b928163526

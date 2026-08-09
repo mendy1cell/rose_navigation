@@ -7,7 +7,7 @@
 <p>
   <img src="https://img.shields.io/badge/C%2B%2B-20-00599C.svg?style=for-the-badge&logo=cplusplus">
   <img src="https://img.shields.io/badge/CMake-3.8%2B-064F8C.svg?style=for-the-badge&logo=cmake">
-  <img src="https://img.shields.io/badge/ROS2-Humble-22314E.svg?style=for-the-badge&logo=ros">
+  <img src="https://img.shields.io/badge/ROS2-Jazzy-22314E.svg?style=for-the-badge&logo=ros">
   <img src="https://img.shields.io/badge/Linux-Ubuntu-E95420.svg?style=for-the-badge&logo=ubuntu">
 </p>
 
@@ -114,8 +114,8 @@ ROSE NAVIGATION 是一个面向小型地面机器人的 ROS 2 导航框架。
 
 ## 🖥 基础环境
 
-- Ubuntu 22.04
-- ROS 2 Humble
+- Ubuntu 24.04
+- ROS 2 Jazzy
 - CMake 3.8+
 - C++20 编译器
 
@@ -127,11 +127,10 @@ ROSE NAVIGATION 是一个面向小型地面机器人的 ROS 2 导航框架。
 - `ament_cmake_auto`
 - `rclcpp`
 - `rclcpp_components`
-- `rclpy`
 - `sensor_msgs`
 - `geometry_msgs`
 - `nav_msgs`
-- `nav2_msgs`
+- `tf2`
 - `tf2_ros`
 - `tf2_geometry_msgs`
 - `std_srvs`
@@ -146,6 +145,9 @@ ROSE NAVIGATION 是一个面向小型地面机器人的 ROS 2 导航框架。
 - `TBB`
 - `OSQP`
 - `OsqpEigen`
+- `small_gicp`
+
+`osqp_eigen` 与 `small_gicp` 是工作空间中的源码依赖，不提供 Jazzy apt 包。CMake 直接链接它们导出的 `OsqpEigen::OsqpEigen` 与 `small_gicp::small_gicp` 目标，因此不需要配置 `/usr/local` 下的 OSQP 路径。
 
 ---
 
@@ -157,33 +159,50 @@ ROSE NAVIGATION 是一个面向小型地面机器人的 ROS 2 导航框架。
 sudo apt update
 
 sudo apt install -y \
-    ros-humble-desktop \
-    ros-humble-tf2-ros \
-    ros-humble-tf2-geometry-msgs \
-    ros-humble-nav2-msgs \
+    ros-jazzy-desktop \
+    ros-jazzy-tf2-ros \
+    ros-jazzy-tf2-geometry-msgs \
+    python3-vcstool \
     libeigen3-dev \
     libopencv-dev \
     libyaml-cpp-dev \
-    libtbb-dev \
-    libosqp-dev
+    libtbb-dev
 ```
 
-> `OsqpEigen` 需要从源码安装。
+## 📂 创建工作空间并获取源码依赖
+
+在本仓库根目录执行以下命令。命令会将当前仓库链接到 ROS 2 工作空间，并使用固定版本清单获取源码依赖：
+
+```bash
+ROSE_NAV_SOURCE="$(pwd)"
+ROSE_NAV_WS="${HOME}/rose_nav"
+
+mkdir -p "${ROSE_NAV_WS}/src"
+ln -s "${ROSE_NAV_SOURCE}" "${ROSE_NAV_WS}/src/rose_navigation"
+
+vcs import "${ROSE_NAV_WS}/src" < "${ROSE_NAV_SOURCE}/jazzy.repos"
+```
+
+如果 `~/rose_nav/src/rose_navigation` 已经存在，则不需要再次执行 `ln -s`。
+
+`jazzy.repos` 固定了 `osqp_vendor`、`osqp_eigen` 与 `small_gicp` 的已验证提交，避免使用不固定的分支版本。
+
+`livox_ros_driver2` 为可选依赖。需要使用 Livox 自定义消息时，请将与 ROS 2 Jazzy 兼容的 `livox_ros_driver2` 源码检出放入 `src`；未放入时项目会在不启用该适配器的情况下构建。
 
 ---
 
 ## 🔨 构建
 
-在 ROS 2 工作空间根目录执行：
+在工作空间根目录执行：
 
 ```bash
-cd /home/hy/rose_nav
+cd "${HOME}/rose_nav"
 
-source /opt/ros/humble/setup.bash
+source /opt/ros/jazzy/setup.bash
 
-colcon build \
-    --packages-select rose_navigation \
-    --symlink-install
+rosdep install --from-paths src --ignore-src -r -y
+
+colcon build --symlink-install
 
 source install/setup.bash
 ```
@@ -602,7 +621,6 @@ rose_navigation
 │   └── utils
 │
 └── 3rdparty
-    ├── backward-cpp
     └── lbfgs.hpp
 ```
 
@@ -624,4 +642,3 @@ rose_navigation
 | RoboMaster 仿真环境 | [rmu_gazebo_simulator](https://github.com/SMBU-PolarBear-Robotics-Team/rmu_gazebo_simulator) | 项目开发和调试过程中使用的 RoboMaster 仿真环境 |
 
 ---
-
