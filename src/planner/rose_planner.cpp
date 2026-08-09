@@ -75,7 +75,7 @@ struct RosePlanner::Impl {
         odometry_sub_ = node.create_subscription<nav_msgs::msg::Odometry>(
             odom_topic,
             rclcpp::SensorDataQoS(),
-            [this](const nav_msgs::msg::Odometry::SharedPtr msg) {
+            [this](const nav_msgs::msg::Odometry::ConstSharedPtr msg) {
                 const auto& odom_in = *msg;
 
                 // 将里程计统一到规划坐标系，保证搜索、ESDF 安全检查和 MPC
@@ -147,7 +147,7 @@ struct RosePlanner::Impl {
         goal_sub_ = node.create_subscription<geometry_msgs::msg::PoseStamped>(
             goal_topic,
             10,
-            [this](const geometry_msgs::msg::PoseStamped::SharedPtr msg) {
+            [this](const geometry_msgs::msg::PoseStamped::ConstSharedPtr msg) {
                 // 目标点可能来自 RViz 或决策节点，坐标系不一定相同；缓存上一次
                 // 有效 TF，容忍短时间 TF 查询失败。
                 static Eigen::Isometry3d target_2_msg = Eigen::Isometry3d::Identity();
@@ -170,7 +170,7 @@ struct RosePlanner::Impl {
         goal_point_sub_ = node.create_subscription<geometry_msgs::msg::PointStamped>(
             goal_point_topic,
             10,
-            [this](const geometry_msgs::msg::PointStamped::SharedPtr msg) {
+            [this](const geometry_msgs::msg::PointStamped::ConstSharedPtr msg) {
                 static Eigen::Isometry3d target_2_msg = Eigen::Isometry3d::Identity();
                 auto target_2_msg_opt = tf_->get_transform<double>(
                     params_.target_frame,
@@ -189,7 +189,7 @@ struct RosePlanner::Impl {
         tunnel_sub_ = node.create_subscription<geometry_msgs::msg::PointStamped>(
             "tunnel",
             10,
-            [this](const geometry_msgs::msg::PointStamped::SharedPtr msg) {
+            [this](const geometry_msgs::msg::PointStamped::ConstSharedPtr msg) {
                 static Eigen::Isometry3d target_2_msg = Eigen::Isometry3d::Identity();
                 auto target_2_msg_opt = tf_->get_transform<double>(
                     params_.target_frame,

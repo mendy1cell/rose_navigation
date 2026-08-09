@@ -1,4 +1,3 @@
-#include "backward-cpp/backward.hpp"
 #include "rose_planner.hpp"
 #include <rclcpp/rclcpp.hpp>
 namespace rose_nav {
@@ -8,7 +7,6 @@ public:
         rose_planner = std::make_unique<planner::RosePlanner>(*this);
     }
     std::unique_ptr<planner::RosePlanner> rose_planner;
-    backward::SignalHandling sh;
 };
 } // namespace rose_nav
 #include "rclcpp_components/register_node_macro.hpp"
