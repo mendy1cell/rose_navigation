@@ -35,20 +35,20 @@ find_package(ament_cmake_auto REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
-find_package(rclpy REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
-find_package(nav2_msgs REQUIRED)
+find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
 find_package(visualization_msgs REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(yaml-cpp REQUIRED)
 find_package(TBB REQUIRED)
 find_package(OsqpEigen REQUIRED)
-find_package(osqp REQUIRED)
+find_package(small_gicp CONFIG REQUIRED)
 find_package(livox_ros_driver2 QUIET)
 if(livox_ros_driver2_FOUND)
     message(STATUS "Found livox_ros_driver2, enabling Livox lidar support.")
@@ -58,9 +58,6 @@ else()
 endif()
 # find_package(robin REQUIRED)
 # find_package(kiss_matcher REQUIRED)
-set(OSQP_LIB_PATH /usr/local/lib/libosqp.so)  
-include_directories(/usr/local/include/osqp)  
-message(STATUS "Using manually specified OSQP C library: ${OSQP_LIB_PATH}")
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/src/param_deliver.h.in  
     ${CMAKE_BINARY_DIR}/src/param_deliver.h            
@@ -89,24 +86,24 @@ target_link_libraries(${PROJECT_NAME}
     yaml-cpp
     TBB::tbb
     OsqpEigen::OsqpEigen
+    small_gicp::small_gicp
     # robin::robin
     # kiss_matcher::kiss_matcher_core
     ${OpenCV_LIBS}
-    ${OSQP_LIB_PATH}
     
 )
 ament_target_dependencies(${PROJECT_NAME}
     rclcpp
     rclcpp_components
-    rclpy
     sensor_msgs
     geometry_msgs
     nav_msgs
+    tf2
     tf2_ros
     tf2_geometry_msgs
+    std_msgs
     std_srvs
     visualization_msgs
-    nav2_msgs
 )
 if(livox_ros_driver2_FOUND)
     ament_target_dependencies(${PROJECT_NAME}
