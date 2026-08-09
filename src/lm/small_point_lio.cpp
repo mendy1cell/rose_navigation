@@ -85,7 +85,7 @@ struct SmallPointLIO::Impl {
         imu_sub_ = node_->create_subscription<sensor_msgs::msg::Imu>(
             imu_topic,
             rclcpp::SensorDataQoS(),
-            [push_input](const sensor_msgs::msg::Imu::SharedPtr msg) {
+            [push_input](const sensor_msgs::msg::Imu::ConstSharedPtr msg) {
                 InputEvent event;
                 event.type = InputEvent::Type::Imu;
                 event.imu.angular_velocity = Eigen::Vector3d(
