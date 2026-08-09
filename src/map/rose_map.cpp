@@ -58,7 +58,7 @@ struct RoseMap::Impl {
         pointcloud_sub_ = node.create_subscription<sensor_msgs::msg::PointCloud2>(
             pointcloud_topic,
             rclcpp::SensorDataQoS(),
-            [this](const sensor_msgs::msg::PointCloud2::SharedPtr pc_msg) {
+            [this](const sensor_msgs::msg::PointCloud2::ConstSharedPtr pc_msg) {
                 const double ros_time =
                     pc_msg->header.stamp.sec + pc_msg->header.stamp.nanosec * 1e-9;
                 static double t_init = -1.0;
@@ -119,7 +119,7 @@ struct RoseMap::Impl {
         odometry_sub_ = node.create_subscription<nav_msgs::msg::Odometry>(
             odom_topic,
             rclcpp::SensorDataQoS(),
-            [this](const nav_msgs::msg::Odometry::SharedPtr msg) {
+            [this](const nav_msgs::msg::Odometry::ConstSharedPtr msg) {
                 const auto& odom = *msg;
                 auto T = tf_->get_transform<double>(
                     target_frame_,
